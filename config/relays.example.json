@@ -1,0 +1,7 @@
+{
+  "relays": {
+    "relay@example.com": {
+      "name": "Example relay"
+    }
+  }
+}

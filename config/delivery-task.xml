@@ -1,0 +1,36 @@
+<Task xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task" version="1.2">
+  <RegistrationInfo>
+    <Description>Check schedule.json delivery windows every minute; Python enforces timing and safe retry intervals.</Description>
+    <URI>\Circus Newsletter Delivery</URI>
+  </RegistrationInfo>
+  <Principals>
+    <Principal id="Author">
+      <UserId>INSTALLER_REPLACES_ACCOUNT</UserId>
+      <LogonType>Password</LogonType>
+    </Principal>
+  </Principals>
+  <Settings>
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+    <StartWhenAvailable>true</StartWhenAvailable>
+    <ExecutionTimeLimit>PT1H</ExecutionTimeLimit>
+  </Settings>
+  <Triggers>
+    <TimeTrigger>
+      <Repetition>
+        <Interval>PT1M</Interval>
+        <StopAtDurationEnd>false</StopAtDurationEnd>
+      </Repetition>
+      <StartBoundary>2026-01-01T00:00:00Z</StartBoundary>
+      <Enabled>true</Enabled>
+    </TimeTrigger>
+  </Triggers>
+  <Actions Context="Author">
+    <Exec>
+      <Command>C:\Newsletter\.venv-host\Scripts\python.exe</Command>
+      <Arguments>"C:\Newsletter\scripts\send_due.py"</Arguments>
+      <WorkingDirectory>C:\Newsletter</WorkingDirectory>
+    </Exec>
+  </Actions>
+</Task>

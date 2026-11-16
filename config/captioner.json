@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "model": "gpt-6-luna",
+  "reasoning_effort": "low",
+  "prompt": "prompts/captions-v1.md",
+  "output_schema": "config/captioner-output.schema.json",
+  "inspection_max_side": 1024,
+  "inspection_jpeg_quality": 82,
+  "max_alt_characters": 320,
+  "max_caption_characters": 240,
+  "max_input_characters": 40000,
+  "timeout_seconds": 180
+}

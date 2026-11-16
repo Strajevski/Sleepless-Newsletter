@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${email_title}</title>
+  <style>
+    @media screen and (max-width: 640px) {
+      .circus-pad { padding: 24px 18px !important; }
+      .circus-title { font-size: 30px !important; line-height: 1.16 !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background:#f5f5f1;color:#182923;font-family:'Noto Sans',Arial,Helvetica,sans-serif;">
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;width:100%;">
+    <tr><td align="center" style="padding:20px 10px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;width:100%;max-width:960px;background:#ffffff;">
+        <tr><td class="circus-pad" style="padding:36px 38px 28px;word-wrap:break-word;overflow-wrap:anywhere;word-break:break-word;">
+          <p style="margin:0 0 26px;color:#285448;font-size:12px;line-height:1.4;font-weight:700;letter-spacing:1.4px;">${newsletter_name} <span style="color:#b99142;padding:0 7px;">|</span> ${issue_number}</p>
+          <h1 class="circus-title" style="margin:0 0 20px;color:#173a32;font-family:'Noto Serif',Georgia,serif;font-size:36px;line-height:1.16;font-weight:700;letter-spacing:-0.5px;">${title}</h1>
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;width:100%;"><tr><td height="5" style="height:5px;background:#244c40;font-size:0;line-height:0;">&nbsp;</td></tr></table>
+          <div style="padding:20px 0 4px;color:#263a34;font-size:16px;line-height:1.6;">${summary_html}</div>
+          ${feed_html}
+          ${worth_html}
+          ${updates_html}
+          ${gallery_html}
+          ${take_html}
+          ${ledger_html}
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>

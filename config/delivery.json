@@ -1,0 +1,6 @@
+{
+  "auto_send_fallback": true,
+  "issue_holds": {
+    "2026-W40": "Awaiting review of the first editor test"
+  }
+}

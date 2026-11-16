@@ -1,0 +1,33 @@
+{
+  "type": "object",
+  "properties": {
+    "issue_week": {"type": "string"},
+    "title": {"type": "string"},
+    "summary": {"type": "string"},
+    "feed": {"type": "array", "items": {"type": "object", "properties": {
+      "member_id": {"type": "string"}, "source_ids": {"type": "array", "items": {"type": "string"}},
+      "headline": {"type": "string"}, "text": {"type": "string"}
+    }, "required": ["member_id", "source_ids", "headline", "text"], "additionalProperties": false}},
+    "worth_your_time": {"type": "array", "items": {"type": "object", "properties": {
+      "source_ids": {"type": "array", "items": {"type": "string"}},
+      "label": {"type": "string"}, "url": {"type": "string"}, "note": {"type": "string"}
+    }, "required": ["source_ids", "label", "url", "note"], "additionalProperties": false}},
+    "personal_updates": {"type": "array", "items": {"type": "object", "properties": {
+      "member_id": {"type": "string"}, "source_ids": {"type": "array", "items": {"type": "string"}},
+      "text": {"type": "string"}
+    }, "required": ["member_id", "source_ids", "text"], "additionalProperties": false}},
+    "gallery": {"type": "array", "items": {"type": "object", "properties": {},
+                "required": [], "additionalProperties": false}},
+    "sleepless_take": {"type": "string"},
+    "take_source_ids": {"type": "array", "items": {"type": "string"}},
+    "editorial_notes": {"type": "object", "properties": {
+      "ranking_reason": {"type": "string"},
+      "word_cap_exceptions": {"type": "array", "items": {"type": "string"}},
+      "review_flags": {"type": "array", "items": {"type": "string"}}
+    }, "required": ["ranking_reason", "word_cap_exceptions", "review_flags"],
+    "additionalProperties": false}
+  },
+  "required": ["issue_week", "title", "summary", "feed", "worth_your_time",
+               "personal_updates", "gallery", "sleepless_take", "take_source_ids", "editorial_notes"],
+  "additionalProperties": false
+}

@@ -1,0 +1,28 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["issue_week", "captions"],
+  "properties": {
+    "issue_week": {"type": "string"},
+    "captions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["submission_id", "filename", "alt_text", "caption", "confidence", "basis", "review_flags"],
+        "properties": {
+          "submission_id": {"type": "string"},
+          "filename": {"type": "string"},
+          "alt_text": {"type": "string"},
+          "caption": {"type": "string"},
+          "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+          "basis": {
+            "type": "array",
+            "items": {"type": "string", "enum": ["visual", "submission", "issue"]}
+          },
+          "review_flags": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    }
+  }
+}

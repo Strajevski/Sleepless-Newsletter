@@ -1,0 +1,9 @@
+{
+  "members": {
+    "example_reader": {
+      "name": "Example Reader",
+      "emails": ["reader@example.com"],
+      "pronouns": ""
+    }
+  }
+}
