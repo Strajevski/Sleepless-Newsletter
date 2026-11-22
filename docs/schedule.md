@@ -45,7 +45,7 @@ Issue IDs continue to name the Sunday at the start of the cutoff cycle, even whe
 From the project folder, run:
 
 ```powershell
-python scripts/schedule.py --issue 2026-W40
+.\.venv-host\Scripts\python.exe scripts/schedule.py --issue 2026-W47
 ```
 
 This validates the configuration and prints all event dates/times in UTC, without contacting email, Discord, or AI services. Use an upcoming issue ID to inspect your next cycle. Invalid clocks, timezones, missing fields, and impossible event ordering are rejected. A full year is checked for timezone transitions. A nonexistent local time during a daylight-saving jump is rejected; a repeated local time uses its first occurrence. UTC avoids both cases.
@@ -53,6 +53,8 @@ This validates the configuration and prints all event dates/times in UTC, withou
 Timing edits are read on the next check. Change schedules between cycles, preferably while automation is stopped. Already frozen issues retain their input; completed drafts are not rebuilt. Changing a campaign's due time after its delivery journal has been created requires manual review: its original due time is part of the duplicate-send protection.
 
 ## Windows task upgrade (once)
+
+For a new installation, follow [registration and activation](../INSTALL-UNINSTALL.md#8-register-and-enable-automation) in the installation guide. The upgrade instructions below are only for an existing installation with the older separate Intake task. Installers enable tasks immediately unless `-Disabled` is supplied.
 
 The supplied task definitions now run a small check every minute, regardless of weekdays or daylight saving. The Final Build task calls `schedule.py --run-intake`; most checks exit immediately, while due checks run the existing intake pipeline. The Delivery task calls `send_due.py`, which applies the JSON timing and retry rules. Actual work starts on the next successful check, not necessarily at second zero. A missed stage check catches up on the next periodic intake run. Missed delivery windows still require manual review.
 

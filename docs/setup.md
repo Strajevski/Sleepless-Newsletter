@@ -1,6 +1,6 @@
 # Setup and readiness checks
 
-The first supported platform is Windows with Python 3.11 or newer. Run these commands from the installation folder, under the Windows account that will eventually run the newsletter. Codex CLI is a separate prerequisite; the doctor reports if it is missing or not signed in. No command in this guide publishes the project or enables scheduled delivery.
+Use Windows with Python 3.11 or newer. For a complete first installation, start with the [installation and uninstall guide](../INSTALL-UNINSTALL.md). This page is the detailed reference for setup options and readiness checks. Run commands from the installation folder under the Windows account that will run the newsletter. Codex CLI is a separate prerequisite; the doctor reports if it is missing or not signed in. No command in this guide enables scheduled delivery.
 
 ## Guided setup
 
@@ -60,16 +60,16 @@ Optional Discord configuration is checked locally when enabled and a webhook exi
 .\.venv-host\Scripts\python.exe scripts/doctor.py --root C:/Newsletter --online
 ```
 
-Results use pass, fail, warn, and skip statuses with actions for failures. Exit code 0 means the requested checks passed; exit code 1 means attention is needed. Offline success does not establish online authentication. JSON output identifies the mode and omits passwords, webhook URLs, account details, and raw service error text. Keep reports local until the later privacy/publication review is complete.
+Results use pass, fail, warn, and skip statuses with actions for failures. Exit code 0 means the requested checks passed; exit code 1 means attention is needed. Offline success does not establish online authentication. JSON output identifies the mode and omits passwords, webhook URLs, account details, and raw service error text. Review any diagnostic files before sharing them.
 
-## Automation and later release work
+## Automation
 
 Setup deliberately has no enable-automation option. Once the installation and recipient list have been reviewed, the [separate task installers](schedule.md#windows-task-upgrade-once) can be run explicitly under the intended Windows account. Passing a doctor check does not enable them or authorise sending.
 
-The fresh-install rehearsal and final publication/security audit are separate next steps. Before sharing a release, review the actual release files and any Git history that would be published for private or sensitive content. No setup or doctor command performs that audit or publishes anything automatically.
+The combined guide explains how to register tasks disabled, inspect them, and explicitly enable them after configuration. For a new installation, use its two-task procedure. Existing installations with a separate Intake task need the schedule guide's migration procedure to avoid duplicate scans.
 
 ## Uninstall
 
 Use `.\scripts\uninstall.ps1` to preview uninstall and add `-Apply` to confirm removal of owned tasks and the local environment. Settings, data, and credentials remain by default. The [uninstall guide](uninstall.md) explains explicit credential deletion, task ownership checks, and local-only path protections. Task installers refuse same-named tasks belonging to a different installation.
 
-For a registration-only rehearsal, both task installers support `-Disabled`. This sets the task-level disabled flag before registration, so triggers cannot start work. Inspect the resulting paths and state as described in [the combined guide](../INSTALL-UNINSTALL.md#5-optional-verify-task-registration-without-running-the-newsletter). Omit this switch only for deliberate live activation.
+Both task installers support `-Disabled`. This sets the task-level disabled flag before registration, so triggers cannot start work. Inspect the resulting paths and state as described in [the combined guide](../INSTALL-UNINSTALL.md#8-register-and-enable-automation), then enable tasks when ready. Omitting `-Disabled` registers enabled tasks immediately.
