@@ -40,6 +40,28 @@ def _section(heading: str, content: str, *, show_empty: bool = False) -> str:
     )
 
 
+def _group_positions(items: list[dict]) -> list[dict]:
+    """Combine wording variants without guessing whether different opinions agree."""
+    grouped = {}
+    for item in items:
+        text = item["text"].strip()
+        key = re.sub(r"\s+", " ", text).rstrip(".!? ").casefold()
+        if key not in grouped:
+            grouped[key] = {"text": text, "names": []}
+        names = item.get("contributors")
+        if names is None:  # Compatibility with earlier preview/issue data.
+            names = [item["attribution"]]
+        if not isinstance(names, list) or not names:
+            raise ValueError("Long/Short contributors must be a nonempty list")
+        for name in names:
+            if not isinstance(name, str) or not name.strip():
+                raise ValueError("Long/Short contributor names must be nonempty strings")
+            if name.strip() not in grouped[key]["names"]:
+                grouped[key]["names"].append(name.strip())
+    return [{"text": item["text"], "attribution": ", ".join(item["names"])}
+            for item in grouped.values()]
+
+
 def _sleepless_take(issue: dict, *, allow_empty: bool = False) -> str:
     take = issue.get("sleepless_take", "")
     if not isinstance(take, str) or (not take.strip() and not allow_empty):
@@ -134,6 +156,33 @@ def render_html(issue: dict, schedule: dict, template_path: Path, *, preview: bo
             f'{_escape(item["name"])}</p>{_paragraphs(item["text"])}</div>'
         )
 
+    positions = issue.get("long_and_short", {})
+    position_columns = []
+    if any(positions.get(side) for side in ("long", "short")):
+        for side, label in (("long", "Long"), ("short", "Short")):
+            entries = "".join(
+                '<p style="margin:0 0 16px;font-size:16px;line-height:1.6;overflow-wrap:anywhere;">'
+                + _escape(item["text"])
+                + ' <span style="color:#6b736d;font-size:13px;">- '
+                + _escape(item["attribution"]) + '</span></p>'
+                for item in _group_positions(positions.get(side, []))
+            )
+            position_columns.append(
+                '<td class="circus-position-column" width="50%" valign="top" '
+                'style="width:50%;padding:0 18px 0 0;vertical-align:top;">'
+                '<h2 style="margin:0 0 19px;color:#20463a;font-size:13px;line-height:1.4;'
+                'font-weight:700;letter-spacing:1.4px;">'
+                + _escape(headings.get(side, label).upper()) + '</h2>' + entries + '</td>'
+            )
+    positions_html = (
+        '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" '
+        'style="border-collapse:collapse;width:100%;margin-top:24px;">'
+        '<tr><td style="border-top:1px solid #d7dcd6;padding-top:22px;">'
+        '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" '
+        'style="border-collapse:collapse;width:100%;table-layout:fixed;"><tr>'
+        + "".join(position_columns) + '</tr></table></td></tr></table>'
+    ) if position_columns else ""
+
     gallery = []
     for item in issue.get("gallery", []):
         src = item.get("image_src")
@@ -142,7 +191,8 @@ def render_html(issue: dict, schedule: dict, template_path: Path, *, preview: bo
                      'style="display:block;width:100%;max-width:544px;height:auto;border:0;">')
         elif preview:
             image = ('<div style="background:#e9eee8;border:1px solid #d7dcd6;padding:56px 12px;'
-                     'text-align:center;color:#597266;font-size:12px;letter-spacing:1px;">IMAGE PLACEHOLDER</div>')
+                     'text-align:center;" role="img" aria-label="'
+                     + _escape(item["alt"]) + '">&nbsp;</div>')
         else:
             raise ValueError("Gallery item is missing image_src")
         gallery.append(
@@ -168,6 +218,7 @@ def render_html(issue: dict, schedule: dict, template_path: Path, *, preview: bo
         feed_html=_section(_escape(headings["feed"].upper()), "".join(feed), show_empty=True),
         worth_html=_section(_escape(headings["worth_your_time"].upper()), "".join(worth)),
         updates_html=_section(_escape(headings["personal_updates"].upper()), "".join(updates)),
+        long_and_short_html=positions_html,
         gallery_html=_section(_escape(headings["gallery"].upper()), "".join(gallery)),
         take_html=_section(_escape(headings["editorial"].upper()), _paragraphs(take), show_empty=allow_empty_take),
         ledger_html=_section(_escape(headings["ledger"].upper()), ledger),
@@ -186,7 +237,15 @@ def render_text(issue: dict, schedule: dict, *, allow_empty_take: bool = False,
         lines.extend([item["headline"], item["text"], f"By {item['attribution']}", ""])
     for key, items in (("worth_your_time", issue.get("worth_your_time", [])),
                        ("personal_updates", issue.get("personal_updates", [])),
+                       ("long_and_short", issue.get("long_and_short", {})),
                        ("gallery", issue.get("gallery", []))):
+        if key == "long_and_short":
+            if any(items.get(side) for side in ("long", "short")):
+                for side, label in (("long", "Long"), ("short", "Short")):
+                    lines.extend([headings.get(side, label).upper(), ""])
+                    for item in _group_positions(items.get(side, [])):
+                        lines.extend([f"{item['text']} - {item['attribution']}", ""])
+            continue
         if items:
             lines.extend([headings[key].upper(), ""])
             for item in items:

@@ -6,17 +6,17 @@
     {
       "headline": "Lorem ipsum in the first item",
       "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sed orci vel nisl pharetra placerat. Nulla facilisi, sed porta sapien sed lectus gravida tempus.",
-      "attribution": "Member A"
+      "attribution": "Alex"
     },
     {
       "headline": "A second lorem ipsum item",
       "text": "Praesent blandit, urna at eleifend faucibus, ipsum arcu ullamcorper tortor, quis ultrices augue nisi a nibh. Donec auctor tellus sed sem vulputate, vitae feugiat orci convallis.",
-      "attribution": "Member B"
+      "attribution": "Bob"
     },
     {
       "headline": "A short third item",
       "text": "Morbi faucibus lorem ut risus varius cursus.",
-      "attribution": "Member C"
+      "attribution": "Charlie"
     }
   ],
   "worth_your_time": [
@@ -33,28 +33,74 @@
   ],
   "personal_updates": [
     {
-      "name": "Member A",
+      "name": "Alex",
       "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
     },
     {
-      "name": "Member C",
+      "name": "Charlie",
       "text": "Sed dapibus augue in nisl facilisis, vitae pellentesque risus malesuada."
     }
   ],
+  "long_and_short": {
+    "long": [
+      {
+        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "contributors": [
+          "Alex"
+        ]
+      },
+      {
+        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "contributors": [
+          "Bob"
+        ]
+      },
+      {
+        "text": "Praesent vitae sapien. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.",
+        "contributors": [
+          "Charlie"
+        ]
+      }
+    ],
+    "short": [
+      {
+        "text": "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "contributors": [
+          "Bob"
+        ]
+      },
+      {
+        "text": "Curabitur blandit tempus porttitor.",
+        "contributors": [
+          "Alex"
+        ]
+      },
+      {
+        "text": "Nullam quis risus eget urna mollis ornare vel eu leo.",
+        "contributors": [
+          "Charlie"
+        ]
+      }
+    ]
+  },
   "gallery": [
     {
       "alt": "Blank image placeholder one",
       "caption": "Lorem ipsum caption for image one.",
-      "credit": "Member A"
+      "credit": "Alex"
     },
     {
       "alt": "Blank image placeholder two",
       "caption": "Lorem ipsum caption for image two.",
-      "credit": "Member B"
+      "credit": "Bob"
     }
   ],
   "sleepless_take": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vitae nunc sed lectus accumsan volutpat; integer blandit ante et lorem cursus, ut feugiat erat pulvinar. Praesent finibus sem at nisl consequat, vitae tristique neque suscipit.",
   "ledger": {
-    "contributors": ["Member A", "Member B", "Member C"]
+    "contributors": [
+      "Alex",
+      "Bob",
+      "Charlie"
+    ]
   }
 }

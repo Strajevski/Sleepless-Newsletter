@@ -12,6 +12,9 @@
     "headings": {
       "feed": "The Lead",
       "personal_updates": "Personal Updates",
+      "long_and_short": "Long and Short",
+      "long": "Long",
+      "short": "Short",
       "worth_your_time": "Worth Your Time",
       "gallery": "Gallery",
       "editorial": "{editor_name}’s Take",

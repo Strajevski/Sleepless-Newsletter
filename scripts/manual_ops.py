@@ -249,6 +249,11 @@ def _retry(issue: str) -> None:
         handle.write("\n")
     covered = {source_id for section in ("feed", "personal_updates", "worth_your_time")
                for item in draft.get(section, []) for source_id in item.get("source_ids", [])}
+    positions = draft.get("long_and_short", {})
+    if isinstance(positions, dict):
+        covered.update(source_id for side in ("long", "short")
+                       for item in positions.get(side, []) if isinstance(item, dict)
+                       for source_id in item.get("source_ids", []))
     missing = sorted(record["submission_id"] for record in records
                      if record["body"].strip() and record["submission_id"] not in covered)
     print("AI candidate saved:", output)

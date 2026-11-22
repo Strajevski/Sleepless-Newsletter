@@ -1,7 +1,7 @@
 {
   "model": "gpt-5.6-sol",
   "reasoning_effort": "medium",
-  "prompt": "prompts/edited-v1.5.1.md",
+  "prompt": "prompts/edited-v2.0.md",
   "max_input_characters": 60000,
   "timeout_seconds": 300
 }

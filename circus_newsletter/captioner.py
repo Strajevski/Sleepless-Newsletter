@@ -75,6 +75,10 @@ def _issue_context(data: dict[str, Any], source_id: str) -> list[dict[str, Any]]
             excerpt = {key: item[key] for key in ("headline", "text", "label", "note", "url", "name")
                        if isinstance(item.get(key), str) and item[key].strip()}
             relevant.append({"section": section, **excerpt})
+    for side in ("long", "short"):
+        for item in data.get("long_and_short", {}).get(side, []):
+            if source_id in item.get("source_ids", []):
+                relevant.append({"section": side, "text": item["text"]})
     return relevant
 
 

@@ -27,8 +27,11 @@ class ReadinessTests(unittest.TestCase):
             shutil.copy2(PROJECT / "config" / filename, self.root / "config" / filename)
         for filename in ("issue-email.html", "preview-data.json"):
             shutil.copy2(PROJECT / "templates" / filename, self.root / "templates" / filename)
-        for filename in ("edited-v1.5.1.md", "captions-v1.md"):
-            shutil.copy2(PROJECT / "prompts" / filename, self.root / "prompts" / filename)
+        for config_name in ("editor.json", "captioner.json"):
+            config = json.loads((self.root / "config" / config_name).read_text(encoding="utf-8"))
+            prompt = Path(config["prompt"])
+            (self.root / prompt).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(PROJECT / prompt, self.root / prompt)
         self.settings = copy.deepcopy(DEFAULTS)
         self.settings["email"]["login_address"] = "editor@newsletter.example.org"
         self.settings["newsletter"]["sender_address"] = "editor@newsletter.example.org"

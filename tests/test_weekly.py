@@ -133,6 +133,29 @@ class WeeklyDraftTests(unittest.TestCase):
                 self.assertEqual(process_issue(self.root, "2026-W40", when(5, 4), retry=True), "fallback")
                 self.assertEqual(editor.call_count, 2)
 
+    def test_positions_survive_editor_pipeline_and_email_draft(self):
+        draft = {"issue_week": "2026-W40", "title": "Positions", "summary": "Two notes.",
+                 "feed": [], "personal_updates": [], "worth_your_time": [], "gallery": [],
+                 "sleepless_take": "A short editorial.",
+                 "long_and_short": {
+                     "long": [{"text": "Lorem ipsum", "source_ids": ["rowan-001", "rowan-002"]}],
+                     "short": [{"text": "Dolor sit amet", "source_ids": ["rowan-002"]}]}}
+        with patch("circus_newsletter.weekly.read_codex_budget", return_value=budget(10, 10)), \
+                patch("circus_newsletter.weekly.codex_draft", return_value=draft):
+            self.assertEqual(process_issue(self.root, "2026-W40", when(4, 23)), "ai")
+        directory = self.root / "issues/2026-W40"
+        data = json.loads((directory / "issue-data.json").read_text(encoding="utf-8"))
+        entry = data["long_and_short"]["long"][0]
+        self.assertEqual(entry["contributors"], ["Rowan"])
+        self.assertEqual(entry["source_ids"], ["rowan-001", "rowan-002"])
+        self.assertIn("Lorem ipsum - Rowan", (directory / "issue.txt").read_text(encoding="utf-8"))
+        self.assertIn("Dolor sit amet", (directory / "issue-preview.html").read_text(encoding="utf-8"))
+        from email import policy
+        from email.parser import BytesParser
+        mail = BytesParser(policy=policy.default).parsebytes((directory / "issue-draft.eml").read_bytes())
+        self.assertIn("Lorem ipsum - Rowan", mail.get_body(preferencelist=("plain",)).get_content())
+        self.assertIn("- Rowan</span>", mail.get_body(preferencelist=("html",)).get_content())
+
     def test_missed_five_am_run_does_not_wait_another_week(self):
         with patch("circus_newsletter.weekly.read_codex_budget", return_value=budget(91, 20)):
             self.assertEqual(process_issue(self.root, "2026-W40", when(4, 23)), "deferred")

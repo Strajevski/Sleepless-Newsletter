@@ -4,19 +4,19 @@ Lorem ipsum dolor sit amet
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae nunc at sapien volutpat mattis. Integer pulvinar, felis et blandit elementum, lorem justo placerat nulla, vel consequat enim massa sed magna.
 
-THE FEED
+THE LEAD
 
 Lorem ipsum in the first item
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sed orci vel nisl pharetra placerat. Nulla facilisi, sed porta sapien sed lectus gravida tempus.
-By Member A
+By Alex
 
 A second lorem ipsum item
 Praesent blandit, urna at eleifend faucibus, ipsum arcu ullamcorper tortor, quis ultrices augue nisi a nibh. Donec auctor tellus sed sem vulputate, vitae feugiat orci convallis.
-By Member B
+By Bob
 
 A short third item
 Morbi faucibus lorem ut risus varius cursus.
-By Member C
+By Charlie
 
 WORTH YOUR TIME
 
@@ -28,15 +28,29 @@ Integer vitae justo vitae nunc tincidunt posuere.
 
 PERSONAL UPDATES
 
-Member A: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Alex: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
-Member C: Sed dapibus augue in nisl facilisis, vitae pellentesque risus malesuada.
+Charlie: Sed dapibus augue in nisl facilisis, vitae pellentesque risus malesuada.
+
+LONG
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. - Alex, Bob
+
+Praesent vitae sapien. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. - Charlie
+
+SHORT
+
+Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. - Bob
+
+Curabitur blandit tempus porttitor. - Alex
+
+Nullam quis risus eget urna mollis ornare vel eu leo. - Charlie
 
 GALLERY
 
-Lorem ipsum caption for image one. — Member A
+Lorem ipsum caption for image one. — Alex
 
-Lorem ipsum caption for image two. — Member B
+Lorem ipsum caption for image two. — Bob
 
 SLEEPLESS’S TAKE
 
@@ -44,5 +58,5 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vitae nunc se
 
 THE LEDGER
 
-Contributors: Member A, Member B, Member C
+Contributors: Alex, Bob, Charlie
 Next submission deadline: Monday 12 October 2026, 03:00 UTC

@@ -16,6 +16,10 @@
       "member_id": {"type": "string"}, "source_ids": {"type": "array", "items": {"type": "string"}},
       "text": {"type": "string"}
     }, "required": ["member_id", "source_ids", "text"], "additionalProperties": false}},
+    "long_and_short": {"type": "object", "properties": {
+      "long": {"type": "array", "items": {"$ref": "#/$defs/position"}},
+      "short": {"type": "array", "items": {"$ref": "#/$defs/position"}}
+    }, "required": ["long", "short"], "additionalProperties": false},
     "gallery": {"type": "array", "items": {"type": "object", "properties": {},
                 "required": [], "additionalProperties": false}},
     "sleepless_take": {"type": "string"},
@@ -27,7 +31,13 @@
     }, "required": ["ranking_reason", "word_cap_exceptions", "review_flags"],
     "additionalProperties": false}
   },
+  "$defs": {
+    "position": {"type": "object", "properties": {
+      "text": {"type": "string"},
+      "source_ids": {"type": "array", "items": {"type": "string"}}
+    }, "required": ["text", "source_ids"], "additionalProperties": false}
+  },
   "required": ["issue_week", "title", "summary", "feed", "worth_your_time",
-               "personal_updates", "gallery", "sleepless_take", "take_source_ids", "editorial_notes"],
+               "personal_updates", "long_and_short", "gallery", "sleepless_take", "take_source_ids", "editorial_notes"],
   "additionalProperties": false
 }

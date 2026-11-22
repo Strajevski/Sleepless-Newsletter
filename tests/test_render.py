@@ -56,6 +56,55 @@ class RenderTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Sleepless’s Take is empty"):
             render_html(self.issue, self.schedule, self.template, preview=True, settings=self.settings)
 
+    def test_positions_escape_text_and_keep_independent_columns(self):
+        self.issue["long_and_short"] = {
+            "long": [{"text": "Tea < coffee", "attribution": "Alex & Bob"}],
+            "short": [],
+        }
+        page = render_html(self.issue, self.schedule, self.template, preview=True, settings=self.settings)
+        self.assertIn("Tea &lt; coffee", page)
+        self.assertIn("Alex &amp; Bob", page)
+        self.assertNotIn("LONG AND SHORT", page)
+        self.assertLess(page.index("PERSONAL UPDATES"), page.index(">LONG</h2>"))
+        self.assertLess(page.index(">SHORT</h2>"), page.index("GALLERY"))
+        self.assertIn('font-size:13px;line-height:1.4;font-weight:700;letter-spacing:1.4px;">SHORT</h2>', page)
+        text = render_text(self.issue, self.schedule, settings=self.settings)
+        self.assertIn("LONG\n\nTea < coffee - Alex & Bob\n\nSHORT", text)
+        self.assertNotIn("LONG AND SHORT", text)
+        self.assertLess(text.index("SHORT"), text.index("GALLERY"))
+
+    def test_positions_are_optional_and_headings_configurable(self):
+        for positions in (None, {}, {"long": [], "short": []}):
+            if positions is None:
+                self.issue.pop("long_and_short", None)
+            else:
+                self.issue["long_and_short"] = positions
+            page = render_html(self.issue, self.schedule, self.template, preview=True, settings=self.settings)
+            self.assertNotIn("LONG AND SHORT", page)
+            self.assertNotIn("LONG AND SHORT", render_text(self.issue, self.schedule, settings=self.settings))
+        self.issue["long_and_short"] = {"short": [{"text": "Lorem ipsum", "attribution": "Charlie"}]}
+        self.settings["newsletter"]["headings"].update(long_and_short="Positions", short="Against")
+        page = render_html(self.issue, self.schedule, self.template, preview=True, settings=self.settings)
+        self.assertNotIn("POSITIONS", page)
+        self.assertIn(">AGAINST</h2>", page)
+
+    def test_positions_combine_matching_wording_only_within_each_column(self):
+        self.issue["long_and_short"] = {
+            "long": [
+                {"text": "Lorem ipsum", "attribution": "Alex"},
+                {"text": "LOREM   ipsum.", "attribution": "Bob"},
+                {"text": "Lorem ipsum", "attribution": "Alex"},
+                {"text": "Not lorem ipsum", "attribution": "Charlie"},
+            ],
+            "short": [{"text": "Lorem ipsum", "attribution": "Charlie"}],
+        }
+        text = render_text(self.issue, self.schedule, settings=self.settings)
+        self.assertEqual(text.count("Lorem ipsum - Alex, Bob"), 1)
+        self.assertIn("Not lorem ipsum - Charlie", text)
+        self.assertIn("SHORT\n\nLorem ipsum - Charlie", text)
+        page = render_html(self.issue, self.schedule, self.template, preview=True, settings=self.settings)
+        self.assertIn('Lorem ipsum <span style="color:#6b736d;font-size:13px;">- Alex, Bob</span>', page)
+
     def test_gallery_requires_real_image_for_non_preview_render(self):
         with self.assertRaisesRegex(ValueError, "image_src"):
             render_html(self.issue, self.schedule, self.template, settings=self.settings)

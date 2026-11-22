@@ -19,6 +19,7 @@ DEFAULTS = {
         "sender_name": "", "sender_address": "", "reply_to_address": None,
         "signature": "{editor_name}", "message_id_domain": "sleepless.circus.news",
         "headings": {"feed": "The Lead", "personal_updates": "Personal Updates",
+                     "long_and_short": "Long and Short", "long": "Long", "short": "Short",
                      "worth_your_time": "Worth Your Time", "gallery": "Gallery",
                      "editorial": "{editor_name}’s Take", "ledger": "The Ledger"},
     },

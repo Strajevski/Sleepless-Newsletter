@@ -27,6 +27,7 @@ Circus Newsletter - operations and original submissions.pdf
 .rivet/
 
 config/settings.json
+config/mail.json
 revisions/
 announcements/
 private/

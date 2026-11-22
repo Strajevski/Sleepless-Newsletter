@@ -221,6 +221,23 @@ def validate_draft(draft: dict, issue: str, records: list[dict]) -> None:
                     raise EditorFailure("editor draft has a link absent from its sources")
             elif not isinstance(item.get("text"), str) or not item["text"].strip():
                 raise EditorFailure(f"editor draft has empty {section} text")
+    positions = draft.get("long_and_short", {"long": [], "short": []})
+    if not isinstance(positions, dict) or set(positions) != {"long", "short"}:
+        raise EditorFailure("editor draft has invalid long_and_short")
+    for side in ("long", "short"):
+        if not isinstance(positions[side], list):
+            raise EditorFailure("editor draft has invalid long_and_short list")
+        for item in positions[side]:
+            if (not isinstance(item, dict) or set(item) != {"text", "source_ids"}
+                    or not isinstance(item["text"], str) or not item["text"].strip()
+                    or not isinstance(item["source_ids"], list) or not item["source_ids"]):
+                raise EditorFailure("editor draft has invalid long_and_short item")
+            for source_id in item["source_ids"]:
+                if not isinstance(source_id, str) or source_id not in by_id:
+                    raise EditorFailure("editor draft cites an unknown long_and_short submission")
+                if not by_id[source_id]["body"].strip():
+                    raise EditorFailure("editor draft cites an empty long_and_short submission")
+                covered.add(source_id)
     missing = {r["submission_id"] for r in records if r["body"].strip()} - covered
     if missing:
         raise EditorFailure("editor draft omitted one or more text submissions")
@@ -296,9 +313,17 @@ def issue_from_draft(draft: dict, records: list[dict]) -> dict:
     updates = [{"name": by_id[item["source_ids"][0]]["display_name"],
                 "text": item["text"], "source_ids": item["source_ids"]}
                for item in draft["personal_updates"]]
+    positions = {
+        side: [{"text": item["text"], "source_ids": list(item["source_ids"]),
+                "contributors": list(dict.fromkeys(by_id[source]["display_name"]
+                                                    for source in item["source_ids"]))}
+               for item in draft.get("long_and_short", {}).get(side, [])]
+        for side in ("long", "short")
+    }
     return {"issue_week": draft["issue_week"], "title": draft["title"],
             "summary": draft["summary"], "feed": feed,
             "worth_your_time": draft["worth_your_time"], "personal_updates": updates,
+            "long_and_short": positions,
             "sleepless_take": draft["sleepless_take"]}
 
 
