@@ -8,7 +8,7 @@ Double-click one of the numbered `.cmd` files on the installation host. The wind
 4. **Hold or release** changes only this issue's delivery hold. Release checks the frozen-input and MIME-draft hashes and the 20 MiB size policy. It does not send an email; it allows the existing schedule to do so.
 5. **Scan inbox** reads Gmail INBOX without changing messages, archives unseen mail, and rebuilds affected live issue inputs. It does not freeze an issue, invoke the editor, post Discord notifications, contact SMTP, or send mail.
 
-For a future bot, call `scripts/manual_ops.py` directly with `--issue`, `--candidate`, `--action`, `--reason`, and `--yes` as appropriate. Do not pass untrusted text through a shell. The tool serializes its own operations, and pauses and restores the three scheduled Circus tasks during live mutations. It preserves tasks that were already disabled. If it reports that task state could not be restored, inspect Task Scheduler before relying on automation.
+For a future bot, call `scripts/manual_ops.py` directly with `--issue`, `--candidate`, `--action`, `--reason`, and `--yes` as appropriate. Do not pass untrusted text through a shell. The tool serializes its own operations, and pauses and restores the registered newsletter tasks during live mutations. Both Final Build and Delivery must be registered; a separate legacy Intake task is supported when present but is not required for new installations. Unrelated tasks are left alone, and tasks that were already disabled stay disabled. If it reports that task state could not be restored, inspect Task Scheduler before relying on automation.
 
 Examples from the installation folder:
 

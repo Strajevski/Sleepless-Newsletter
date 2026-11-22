@@ -113,12 +113,20 @@ def _powershell(script: str) -> str:
 def _task_states() -> list[dict]:
     names = ",".join("'" + name.replace("'", "''") + "'" for name in TASKS)
     script = ("$ErrorActionPreference='Stop'; $names=@(" + names + "); "
-              "$rows=@(foreach($name in $names){$t=Get-ScheduledTask -TaskName $name; "
-              "[pscustomobject]@{name=$name;enabled=[bool]$t.Settings.Enabled;state=[string]$t.State}}); "
+              "$rows=@(Get-ScheduledTask -TaskPath '\\' -ErrorAction Stop | "
+              "Where-Object {$_.TaskName -in $names} | ForEach-Object {"
+              "[pscustomobject]@{name=$_.TaskName;enabled=[bool]$_.Settings.Enabled;state=[string]$_.State}}); "
               "ConvertTo-Json -InputObject $rows -Compress")
     rows = json.loads(_powershell(script))
-    if not isinstance(rows, list) or len(rows) != len(TASKS):
-        raise RuntimeError("Could not establish the state of every Circus task")
+    required = set(TASKS[1:])  # New installs have no separate legacy Intake task.
+    if (not isinstance(rows, list)
+            or any(not isinstance(row, dict) or not isinstance(row.get("name"), str)
+                   or type(row.get("enabled")) is not bool or not isinstance(row.get("state"), str)
+                   for row in rows)):
+        raise RuntimeError("Could not establish the state of the newsletter tasks")
+    found = {row["name"] for row in rows}
+    if not required <= found <= set(TASKS) or len(found) != len(rows):
+        raise RuntimeError("Final Build and Delivery tasks must be registered; legacy Intake is optional")
     return rows
 
 
@@ -126,7 +134,7 @@ def _change_task(name: str, enabled: bool) -> None:
     if name not in TASKS:
         raise ValueError("Unknown scheduled task")
     verb = "Enable" if enabled else "Disable"
-    _powershell(f"$ErrorActionPreference='Stop'; {verb}-ScheduledTask -TaskName '{name}' | Out-Null")
+    _powershell(f"$ErrorActionPreference='Stop'; {verb}-ScheduledTask -TaskName '{name}' -TaskPath '\\' | Out-Null")
 
 
 @contextmanager

@@ -2,6 +2,14 @@
 
 A Windows newsletter pipeline for collecting email submissions, preparing AI-edited or deterministic fallback drafts, rendering HTML/plain text, and delivering scheduled issues. Private settings, credentials, roster, submissions, delivery journals, and local operational tools are excluded from the release source.
 
+## Sample newsletter
+
+[View the sample HTML](https://htmlpreview.github.io/?https://github.com/Strajevski/Sleepless-Newsletter/blob/main/templates/sample-issue.html) · [Download the HTML](https://raw.githubusercontent.com/Strajevski/Sleepless-Newsletter/main/templates/sample-issue.html)
+
+This example uses lorem ipsum and fictional contributors, including the Long and Short columns. The Gallery is intentionally blank. The browser preview uses a third-party viewer and will work after this repository is public; you can also download the HTML and open it locally.
+
+![Sample newsletter with fictional contributors and Long and Short columns](templates/sample-desktop.png)
+
 ## Requirements
 
 * A Windows computer acting as the server, able to remain on, awake and connected to the internet during scheduled operations. Windows 11 26H2 is the tested version; other versions may work but are not confirmed here.

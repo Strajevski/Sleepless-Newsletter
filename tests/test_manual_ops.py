@@ -1,5 +1,8 @@
 import hashlib
 import json
+import os
+import shutil
+import subprocess
 import tempfile
 import unittest
 from contextlib import nullcontext
@@ -28,6 +31,64 @@ class ManualOperationsTests(unittest.TestCase):
         journal.write_text('{"status":{"casey":"pending"}}', encoding="utf-8")
         with self.assertRaisesRegex(RuntimeError, "delivery journal exists"):
             manual_ops._require_undelivered(self.issue)
+
+    def test_task_inventory_requires_both_current_tasks_and_valid_unique_states(self):
+        valid = [{"name": name, "enabled": True, "state": "Ready"} for name in manual_ops.TASKS[1:]]
+        with patch.object(manual_ops, "_powershell", return_value=json.dumps(valid)):
+            self.assertEqual(manual_ops._task_states(), valid)
+        for invalid in ([], valid[:1], valid + valid[:1],
+                        [{"name": "Other task", "enabled": True, "state": "Ready"}],
+                        [{"name": manual_ops.TASKS[1], "enabled": "true", "state": "Ready"}]):
+            with self.subTest(invalid=invalid), patch.object(manual_ops, "_powershell", return_value=json.dumps(invalid)):
+                with self.assertRaises(RuntimeError):
+                    manual_ops._task_states()
+
+    @unittest.skipUnless(os.name == "nt", "Windows task-inventory query")
+    def test_real_powershell_query_and_pause_support_both_task_layouts(self):
+        for shell in filter(None, (shutil.which("powershell.exe"), shutil.which("pwsh.exe"))):
+            for layout in (manual_ops.TASKS[1:], manual_ops.TASKS):
+                rows = [{"name": name, "enabled": name != manual_ops.TASKS[2], "state": "Ready"}
+                        for name in layout]
+                fixture = self.root / "task-fixture.json"
+                fixture.write_text(json.dumps(rows), encoding="utf-8")
+                harness = self.root / "query.ps1"
+                environment = os.environ.copy()
+                environment["CIRCUS_TASK_FIXTURE"] = str(fixture)
+
+                def query(script):
+                    harness.write_text('''function Get-ScheduledTask {
+    param([string]$TaskPath, [string]$ErrorAction)
+    if ($TaskPath -ne '\\') { throw 'Expected root-folder inventory' }
+    foreach ($row in (Get-Content -LiteralPath $env:CIRCUS_TASK_FIXTURE -Raw | ConvertFrom-Json)) {
+        [pscustomobject]@{TaskName=$row.name; Settings=[pscustomobject]@{Enabled=$row.enabled}; State=$row.state}
+    }
+    [pscustomobject]@{TaskName='Unrelated task'; Settings=[pscustomobject]@{Enabled=$true}; State='Ready'}
+}
+''' + script, encoding="utf-8")
+                    result = subprocess.run([shell, "-NoProfile", "-NonInteractive", "-Command",
+                                             harness.read_text(encoding="utf-8")],
+                                            env=environment, capture_output=True, text=True, timeout=20)
+                    if result.returncode:
+                        raise RuntimeError(result.stderr)
+                    return result.stdout
+
+                with self.subTest(shell=shell, layout=layout), \
+                        patch.object(manual_ops, "_powershell", side_effect=query), \
+                        patch.object(manual_ops, "_change_task") as change:
+                    self.assertEqual(manual_ops._task_states(), rows)
+                    with manual_ops._pause_tasks():
+                        pass
+                    names = [row["name"] for row in rows if row["enabled"]]
+                    self.assertEqual([call.args for call in change.call_args_list],
+                                     [(name, False) for name in names] + [(name, True) for name in reversed(names)])
+
+    def test_task_query_failure_prevents_manual_changes(self):
+        with patch.object(manual_ops, "_powershell", side_effect=RuntimeError("Access denied")), \
+                patch.object(manual_ops, "_change_task") as change:
+            with self.assertRaisesRegex(RuntimeError, "Access denied"):
+                with manual_ops._pause_tasks():
+                    self.fail("Should not reach mutation")
+            change.assert_not_called()
 
     def test_task_pause_restores_only_originally_enabled_tasks(self):
         before = [
