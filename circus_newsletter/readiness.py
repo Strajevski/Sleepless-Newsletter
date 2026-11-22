@@ -37,6 +37,10 @@ class Check:
 def check_secret_acl(path: Path) -> bool:
     """Machine DPAPI requires that only the setup account and SYSTEM can read it."""
     environment = os.environ.copy()
+    # Windows PowerShell must discover its own built-in security module even
+    # when this Python process was launched from PowerShell 7.
+    environment["PSModulePath"] = str(Path(os.environ.get("SystemRoot", r"C:\Windows")) /
+                                       "System32/WindowsPowerShell/v1.0/Modules")
     environment["CIRCUS_CHECK_SECRET_PATH"] = str(path)
     command = """$ErrorActionPreference = 'Stop'
 $allowed = @([System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value, 'S-1-5-18')

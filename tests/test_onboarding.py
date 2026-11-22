@@ -1,5 +1,6 @@
 import copy
 import json
+import os
 import shutil
 import subprocess
 import tempfile
@@ -13,9 +14,19 @@ from circus_newsletter.settings import DEFAULTS
 
 PROJECT = Path(__file__).resolve().parents[1]
 REAL_EXAMPLE_CHECK = readiness._example_address
+REAL_ACL_CHECK = readiness.check_secret_acl
 
 
 class ReadinessTests(unittest.TestCase):
+    def test_acl_helper_does_not_inherit_powershell_seven_module_path(self):
+        with patch.dict(os.environ, {"PSModulePath": "fictional-powershell-seven-modules"}), \
+                patch("circus_newsletter.readiness.subprocess.run",
+                      return_value=SimpleNamespace(stdout="true")) as command:
+            self.assertTrue(REAL_ACL_CHECK(Path("fictional-secret.dpapi")))
+            self.assertTrue(command.call_args.kwargs["env"]["PSModulePath"].replace("\\", "/")
+                            .endswith("System32/WindowsPowerShell/v1.0/Modules"))
+            self.assertEqual(os.environ["PSModulePath"], "fictional-powershell-seven-modules")
+
     def setUp(self):
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
